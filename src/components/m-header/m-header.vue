@@ -15,7 +15,7 @@
   
   .m-header-view 
     positive: relative
-    text: align
+    text-align: center
     font-size: 0
     color: #ffcd32
     height: 44px

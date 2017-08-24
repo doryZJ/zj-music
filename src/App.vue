@@ -11,6 +11,11 @@ import MHeader from './components/m-header/m-header'
 import Tab from './components/tab/tab'
 export default {
   name: 'app',
+  data () {
+    return {
+      recValue: '324'
+    }
+  },
   components: {
     MHeader,
     Tab

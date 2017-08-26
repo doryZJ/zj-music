@@ -39,15 +39,21 @@
     mounted () {
       setTimeout(() => {
         this.setSliderWidth()
-        this.initSlider()
         this.initDots()
+        this.initSlider()
         if (this.autoPlay) {
           this.play()
         }
       }, 20)
+      window.addEventListener('resize', () => {
+        if (!this.slider) {
+          return
+        }
+        this.setSliderWidth(true)
+      })
     },
     methods: {
-      setSliderWidth () {
+      setSliderWidth (resize) {
         this.children = this.$refs.sliderGroup.children
         let width = 0
         let sliderWidth = this.$refs.slider.clientWidth
@@ -57,7 +63,7 @@
           child.style.width = sliderWidth + 'px'
           width += sliderWidth
         }
-        if (this.loop) {
+        if (this.loop && !resize) {
           width += sliderWidth * 2
         }
         this.$refs.sliderGroup.style.width = width + 'px'
@@ -75,6 +81,9 @@
         })
         this.slider.on('scrollEnd', () => {
           let pageIndex = this.slider.getCurrentPage().pageX
+          if (this.loop) {
+            pageIndex -= 1
+          }
           this.currentPageIndex = pageIndex
           if (this.autoPlay) {
             this.play()
@@ -90,8 +99,10 @@
         this.dots = new Array(this.children.length)
       },
       play () {
-        let pageIndex = this.slider.getCurrentPage().pageX
-        console.log(pageIndex)
+        let pageIndex = this.currentPageIndex + 1
+        if (this.loop) {
+          pageIndex += 1
+        }
         this.timer = setTimeout(() => {
           this.slider.goToPage(pageIndex, 0, 400)
         }, this.interval)

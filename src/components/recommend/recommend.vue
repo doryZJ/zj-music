@@ -2,11 +2,11 @@
   <div class="recommend-view">
     <scroll ref="scroll" class="recommend-content" :data="discList">
       <div>
-        <div v-if="this.recommends.length" class="slider-wrapper" ref="sliderWrapper">
+        <div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
           <slider>
               <div v-for="item in recommends">
                 <a :href="item.linkUrl">
-                  <img :src="item.picUrl" alt="">
+                  <img :src="item.picUrl" @load="loadImage" alt="">
                 </a>
               </div>
           </slider>
@@ -14,7 +14,7 @@
         <div class="recommend-list">
           <h1 class="list-title">热门歌单推荐</h1>
           <ul>
-            <li v-for="item in discList" class="item">
+            <li v-for="item in discList" class="item" @click="selectItem(item)">
               <div class="icon">
                 <img :src="item.imgurl" width="60" height="60" alt="">
               </div>
@@ -25,6 +25,9 @@
             </li>
           </ul>
         </div>
+        <div class="loading-container" v-show="!discList.length">
+          <loading></loading> 
+        </div>
       </div>
     </scroll>
   </div>
@@ -34,6 +37,7 @@
   import { ERR_OK } from '../../api/config'
   import Slider from '../../base/slider/slider'
   import Scroll from '../../base/scroll/scroll'
+  import Loading from '../../base/loading/loading'
   export default {
     name: 'recommend',
     data () {
@@ -44,7 +48,8 @@
     },
     components: {
       Slider,
-      Scroll
+      Scroll,
+      Loading
     },
     created () {
       this.getRecommend()
@@ -73,6 +78,17 @@
           .catch(err => {
             console.log(err)
           })
+      },
+      loadImage () {
+        if (!this.checkloaded) {
+          this.checkloaded = true
+          this.$refs.scroll.refresh()
+        }
+      },
+      selectItem (val) {
+        this.$router.push({
+          path: `/recommend/${val.dissid}`
+        })
       }
     }
   }
@@ -127,4 +143,9 @@
               color: $color-text
             .desc
               color: $color-text-d
+      .loading-container
+        position: absolute
+        width: 100%
+        top: 50%
+        transform: translateY(-50%)
 </style>

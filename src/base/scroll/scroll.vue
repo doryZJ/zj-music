@@ -17,10 +17,6 @@
         type: Boolean,
         default: true
       },
-      listenScroll: {
-        type: Boolean,
-        default: true
-      },
       data: {
         type: Array,
         default: null

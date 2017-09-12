@@ -62,6 +62,9 @@ export default {
     Scroll
   },
   mounted () {
+    setTimeout(() => {
+      this._calculateHeight()
+    }, 20)
   },
   methods: {
     onShortcutTouchStart (e) {
@@ -93,6 +96,26 @@ export default {
         height += item.clientHeight
         this.listHeight.push(height)
       })
+    }
+  },
+  watch: {
+    scrollY: {
+      handler (val) {
+        const listHeight = this.listHeight
+        if (val > 0) {
+          this.currentIndex = 0
+          return
+        }
+        for (let i = 0; i < listHeight.length; i++) {
+          let height1 = listHeight[i]
+          let height2 = listHeight[i + 1]
+          if (-val > height1 && -val < height2) {
+            this.currentIndex = i
+            return
+          }
+        }
+        this.currentIndex = listHeight.length - 1
+      }
     }
   }
 }

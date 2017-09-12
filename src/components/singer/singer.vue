@@ -46,7 +46,7 @@
         list.forEach((item, index) => {
           if (index < HOT_SINGER_LEN) {
             map.hot.items.push(new Singer({
-              id: item.Fsinger_name,
+              id: item.Fsinger_mid,
               name: item.Fsinger_name
             }))
           }
@@ -58,7 +58,7 @@
             }
           }
           map[key].items.push(new Singer({
-            id: item.Fsinger_name,
+            id: item.Fsinger_mid,
             name: item.Fsinger_name
           }))
         })

@@ -6,7 +6,10 @@
           @scroll="scroll"
 					ref="listview">
 		<ul>
-			<li v-for="group in data" class="list-group" ref="listGroup">
+			<li v-for="(group, index) in data"
+          :key="index"
+          class="list-group"
+          ref="listGroup">
 				<h2 class="list-group-title">{{group.title}}</h2>
 				<ul>
 					<li v-for="item in group.items" class="list-group-item">
@@ -18,18 +21,30 @@
 		</ul>
     <div class="list-shortcut" @touchstart="onShortcutTouchStart" @touchmove.stop.prevent="onShortcutTouchMove">
       <ul>
-        <li v-for="(item, index) in shortcutList" class="item" 
+        <li v-for="(item, index) in shortcutList"
+            :key="index"
+            class="item" 
             :data-index="index"
             :class="{'current': currentIndex === index }">
           {{item}}
         </li>
       </ul>
     </div>
+    <div class="list-fixed" 
+         v-show="fixedTitle"
+         ref="fixed">
+      <div class="fixed-title">{{fixedTitle}}</div>
+    </div>
+    <div class="loading-container" v-show="!data.length">
+      <loading></loading> 
+    </div>
 	</scroll>
 </template>
 <script>
 import Scroll from '../scroll/scroll'
+import Loading from '../loading/loading'
 import { getData } from 'common/js/dom'
+const TITLE_HEIGHT = 30
 const ANCHOR_HEIGHT = 18
 export default {
   name: 'listview',
@@ -42,7 +57,8 @@ export default {
   data () {
     return {
       scrollY: -1,
-      currentIndex: 0
+      currentIndex: 0,
+      diff: -1
     }
   },
   computed: {
@@ -50,6 +66,12 @@ export default {
       return this.data.map((group) => {
         return group.title.substr(0, 1)
       })
+    },
+    fixedTitle () {
+      if (this.scrollY > 0) {
+        return ''
+      }
+      return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
     }
   },
   created () {
@@ -59,7 +81,8 @@ export default {
     this.listHeight = []
   },
   components: {
-    Scroll
+    Scroll,
+    Loading
   },
   mounted () {
     setTimeout(() => {
@@ -85,6 +108,14 @@ export default {
       this.scrollY = pos.y
     },
     scrollTo (index) {
+      if (!index && index !== 0) {
+        return
+      }
+      if (index < 0) {
+        index = 0
+      } else if (index > this.listHeight.length - 2) {
+        index = this.listHeight.length - 2
+      }
       this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0)
     },
     _calculateHeight () {
@@ -106,15 +137,26 @@ export default {
           this.currentIndex = 0
           return
         }
-        for (let i = 0; i < listHeight.length; i++) {
+        for (let i = 0; i < listHeight.length - 1; i++) {
           let height1 = listHeight[i]
           let height2 = listHeight[i + 1]
           if (-val > height1 && -val < height2) {
             this.currentIndex = i
+            this.diff = height2 + val
             return
           }
         }
-        this.currentIndex = listHeight.length - 1
+        this.currentIndex = listHeight.length - 2
+      }
+    },
+    diff: {
+      handler (val) {
+        let fixedTop = (val > 0 && val < TITLE_HEIGHT) ? val - TITLE_HEIGHT : 0
+        if (this.fixedTop === fixedTop) {
+          return
+        }
+        this.fixedTop = fixedTop
+        this.$refs.fixed.style.transform = `translate3d(0, ${fixedTop}px, 0)`
       }
     }
   }
@@ -168,4 +210,21 @@ export default {
         font-size: $font-size-small
         &.current
           color: $color-theme
+    .list-fixed
+      position: absolute
+      top: 0
+      left: 0
+      width: 100%
+      .fixed-title
+        height: 30px
+        line-height: 30px
+        padding-left: 20px
+        font-size: $font-size-small
+        color: $color-text-l
+        background: $color-highlight-background
+    .loading-container
+      position: absolute
+      width: 100%
+      top: 50%
+      transform: translateY(-50%)
 </style>

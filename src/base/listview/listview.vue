@@ -12,14 +12,20 @@
           ref="listGroup">
 				<h2 class="list-group-title">{{group.title}}</h2>
 				<ul>
-					<li v-for="item in group.items" class="list-group-item">
+					<li v-for="(item, index) in group.items" 
+              :key="index"
+              @click="selectItem(item)"
+              class="list-group-item">
 						<img v-lazy="item.avatar" class="avatar" alt="">
 						<span class="name">{{item.name}}</span>
 					</li>
 				</ul>
 			</li>
 		</ul>
-    <div class="list-shortcut" @touchstart="onShortcutTouchStart" @touchmove.stop.prevent="onShortcutTouchMove">
+    <div class="list-shortcut" 
+         @touchstart="onShortcutTouchStart" 
+         @touchmove="onShortcutTouchMove" 
+      >
       <ul>
         <li v-for="(item, index) in shortcutList"
             :key="index"
@@ -85,11 +91,11 @@ export default {
     Loading
   },
   mounted () {
-    setTimeout(() => {
-      this._calculateHeight()
-    }, 20)
   },
   methods: {
+    selectItem (item) {
+      this.$emit('select', item)
+    },
     onShortcutTouchStart (e) {
       let anthorIndex = getData(e.target, 'index')
       let firstTouch = e.touches[0]
@@ -116,6 +122,7 @@ export default {
       } else if (index > this.listHeight.length - 2) {
         index = this.listHeight.length - 2
       }
+      this.scrollY = -this.listHeight[index]
       this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0)
     },
     _calculateHeight () {
@@ -130,9 +137,18 @@ export default {
     }
   },
   watch: {
+    data: {
+      handler (val) {
+        setTimeout(() => {
+          this._calculateHeight()
+        }, 20)
+      }
+    },
     scrollY: {
       handler (val) {
         const listHeight = this.listHeight
+        console.log(val)
+        console.log(listHeight)
         if (val > 0) {
           this.currentIndex = 0
           return
@@ -140,13 +156,14 @@ export default {
         for (let i = 0; i < listHeight.length - 1; i++) {
           let height1 = listHeight[i]
           let height2 = listHeight[i + 1]
-          if (-val > height1 && -val < height2) {
+          if (-val >= height1 && -val < height2) {
             this.currentIndex = i
             this.diff = height2 + val
             return
           }
         }
         this.currentIndex = listHeight.length - 2
+        console.log(this.currentIndex)
       }
     },
     diff: {

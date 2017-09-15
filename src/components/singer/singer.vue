@@ -1,6 +1,7 @@
 <template>
   <div class="singer-view" ref="singer">
-    <list-view :data="singers"></list-view>
+    <list-view :data="singers" @select="selectSinger"></list-view>
+    <router-view></router-view>
   </div>
 </template>
 <script>
@@ -8,6 +9,8 @@
   import { ERR_OK } from '../../api/config'
   import Singer from 'common/js/singer'
   import ListView from '../../base/listview/listview'
+  import { mapMutations } from 'vuex'
+  import * as types from '../../store/mutations_types'
   const HOT_NAME = '热门'
   const HOT_SINGER_LEN = 10
   export default {
@@ -24,6 +27,15 @@
       ListView
     },
     methods: {
+      ...mapMutations({
+        setSinger: types.SET_SINGER
+      }),
+      selectSinger (singer) {
+        this.$router.push({
+          path: `/singer/${singer.id}`
+        })
+        this.setSinger(singer)
+      },
       getSingerList () {
         getSingerList()
           .then(res => {

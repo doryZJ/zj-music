@@ -1,13 +1,23 @@
 <template>
-  <transition name="slide">
-    <div class="singerDetail"></div>
-  </transition>
+    <div class="singerDetail">
+      <transition name="custom-transition"
+              enter-active-class="animated tada"
+              leave-active-class="animated bounceOutRight">
+        <p v-show="textShow">123</p>
+      </transition>
+      <div class="show" @click="tiggerShow"></div>
+    </div>
 </template>
 <script>
   import { mapGetters } from 'vuex'
   import { getSingerDetail } from '../../api/singer'
   export default {
     name: 'singerDetail',
+    data () {
+      return {
+        textShow: false
+      }
+    },
     computed: {
       ...mapGetters([
         'singer'
@@ -25,7 +35,11 @@
           .catch(err => {
             console.log(err)
           })
+      },
+      tiggerShow () {
+        this.textShow = !this.textShow
       }
+
     }
   }
 </script>
@@ -38,10 +52,15 @@
     right: 0
     z-index: 100
     background: #222
+    p
+      width: 200px
+      height: 50px
+      background: #fff
+      color: #000
     
-  .slide-enter-active, .slide-leave-active
-    transition: all 0.3s
+  // .slide-enter-active, .slide-leave-active
+  //   transition: all 0.3s
 
-  .slide-enter, .slide-leave-to
-    transform: translate3d(100%, 0, 0)
+  // .slide-enter, .slide-leave-to
+  //   transform: translate3d(100%, 0, 0)
 </style>

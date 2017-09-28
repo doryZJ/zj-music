@@ -21,8 +21,10 @@
 <script>
   import Scroll from 'base/scroll/scroll'
   import SongList from 'base/song-list/song-list'
+  import {prefixStyle} from 'common/js/dom'
   const RESERVED_HEIGHT = 40
-  // const transform = prefixStyle('transform')
+  const transform = prefixStyle('transform')
+  const backdrop = prefixStyle('backdrop-filter')
   export default {
     name: 'musicList',
     props: {
@@ -78,14 +80,14 @@
           let scale = 1
           let blur = 0
           const precent = Math.abs(val / this.imageHeight)
-          this.$refs.layer.style['transform'] = `translate3d(0,${translateY}px,0)`
+          this.$refs.layer.style[transform] = `translate3d(0,${translateY}px,0)`
           if (val > 0) {
             scale = scale + precent
             zIndex = 10
           } else {
             blur = Math.min(20, 20 * precent)
           }
-          this.$refs.filter.style['backdrop-filter'] = `blur(${blur}px)`
+          this.$refs.filter.style[backdrop] = `blur(${blur}px)`
           if (val < this.minTranslateY) {
             zIndex = 10
             this.$refs.bgImage.style.paddingTop = 0
@@ -94,7 +96,7 @@
             this.$refs.bgImage.style.paddingTop = '70%'
             this.$refs.bgImage.style.height = 0
           }
-          this.$refs.bgImage.style['transform'] = `scale(${scale})`
+          this.$refs.bgImage.style[transform] = `scale(${scale})`
           this.$refs.bgImage.style.zIndex = zIndex
         }
       }

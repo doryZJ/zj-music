@@ -13,12 +13,13 @@
             :listen-scroll="listenScroll"
             :data="songs" class="list" ref="list">
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list :songs="songs" @select="selectItem"></song-list>
       </div>
     </scroll>
   </div>
 </template>
 <script>
+  import {mapActions} from 'vuex'
   import Scroll from 'base/scroll/scroll'
   import SongList from 'base/song-list/song-list'
   import {prefixStyle} from 'common/js/dom'
@@ -65,11 +66,20 @@
       this.$refs.list.$el.style.top = `${this.imageHeight}px`
     },
     methods: {
+      ...mapActions([
+        'selectPlay'
+      ]),
       back () {
         this.$router.back()
       },
       scroll (pos) {
         this.scrollY = pos.y
+      },
+      selectItem (item, index) {
+        this.selectPlay({
+          list: this.songs,
+          index
+        })
       }
     },
     watch: {

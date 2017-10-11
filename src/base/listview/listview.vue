@@ -110,6 +110,9 @@ export default {
       let anthorIndex = parseInt(this.touch.anthorIndex) + delta
       this.scrollTo(anthorIndex)
     },
+    refresh () {
+      this.$refs.listview.refresh()
+    },
     scroll (pos) {
       this.scrollY = pos.y
     },
